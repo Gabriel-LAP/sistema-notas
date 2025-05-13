@@ -64,6 +64,6 @@ DB_PORT=5432
 
 ### 4. Execute o sistema
 ```bash
-python app.py
+python sistema_notas.py
 ```
 
