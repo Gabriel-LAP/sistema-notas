@@ -25,15 +25,16 @@ Este é um sistema desktop simples para registrar notas de alunos, desenvolvido 
 O sistema cria automaticamente as tabelas abaixo ao iniciar:
 
 - **alunos**:  
-  - `aluno_id`: identificador único  
+  - `aluno_id`: identificador único do aluno 
   - `nome`: nome do aluno  
   - `turma`: turma do aluno
+  - `nota`: nota do aluno
+  - `disciplina`: nome da disciplina
 
-- **notas**:  
-  - `nota_id`: identificador único da nota  
-  - `aluno_id`: referência ao aluno  
+- **professores**:  
+  - `professor_id`: identificador único do professor  
+  - `nome`: nome do professor 
   - `disciplina`: nome da disciplina  
-  - `nota`: valor da nota (formato decimal)
 
 
 ## ⚙️ Instalação e Execução
