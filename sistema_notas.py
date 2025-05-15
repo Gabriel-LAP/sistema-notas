@@ -84,6 +84,22 @@ def buscar_por_nome():
     for aluno in registros:
         tree_alunos.insert("", tk.END, values=aluno)
 
+def obter_disciplinas():
+    conn = conectar()
+    cur = conn.cursor()
+    cur.execute("SELECT DISTINCT disciplina FROM professores ORDER BY disciplina")
+    disciplinas = [row[0] for row in cur.fetchall()]
+    conn.close()
+    return disciplinas
+
+def buscar_professor_por_disciplina(disciplina):
+    conn = conectar()
+    cur = conn.cursor()
+    cur.execute("SELECT nome FROM professores WHERE disciplina = %s LIMIT 1", (disciplina,))
+    resultado = cur.fetchone()
+    conn.close()
+    return resultado[0] if resultado else "Professor não encontrado"
+
 def criar_filtro_alunos(frame):
     filtro_frame = tk.Frame(frame, bg="#f0f4f8")
     filtro_frame.pack(pady=5)
@@ -182,8 +198,20 @@ def criar_formulario_cadastro(frame):
     frame_nota.pack(padx=10, pady=10, fill="x")
 
     tk.Label(frame_nota, text="Disciplina:", bg="#f0f4f8").pack(anchor="w")
-    entry_disciplina = tk.Entry(frame_nota)
-    entry_disciplina.pack(fill="x", pady=5)
+    
+    # Removido o entry_disciplina e mantido apenas o combobox
+    combo_disciplina = ttk.Combobox(frame_nota, values=obter_disciplinas(), state="readonly")
+    combo_disciplina.pack(fill="x", pady=5)
+
+    label_professor = tk.Label(frame_nota, text="", bg="#f0f4f8", font=("Arial", 12), fg="blue")
+    label_professor.pack(anchor="w", pady=(0, 5))
+
+    def atualizar_professor(event):
+        disciplina = combo_disciplina.get()
+        nome_professor = buscar_professor_por_disciplina(disciplina)
+        label_professor.config(text=f"Professor: {nome_professor}")
+
+    combo_disciplina.bind("<<ComboboxSelected>>", atualizar_professor)
 
     tk.Label(frame_nota, text="Nota:", bg="#f0f4f8").pack(anchor="w")
     entry_nota = tk.Entry(frame_nota)
@@ -194,8 +222,11 @@ def criar_formulario_cadastro(frame):
         if not item:
             messagebox.showwarning("Aviso", "Selecione um aluno na aba Consulta.")
             return
-        disciplina = entry_disciplina.get().strip()
+        
+        # Agora usamos apenas o valor do combobox para a disciplina
+        disciplina = combo_disciplina.get()
         nota = entry_nota.get().strip()
+        
         if not disciplina or not nota:
             messagebox.showwarning("Aviso", "Preencha todos os campos.")
             return
@@ -211,7 +242,6 @@ def criar_formulario_cadastro(frame):
         conn.commit()
         conn.close()
         messagebox.showinfo("Sucesso", "Nota adicionada com sucesso!")
-        entry_disciplina.delete(0, tk.END)
         entry_nota.delete(0, tk.END)
         atualizar_lista()
 
